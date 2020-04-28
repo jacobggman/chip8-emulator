@@ -10,7 +10,6 @@
 #include <windows.h>
 #include <cmath>
 #include "CPU.h"
-#include "testConsole.h"
 
 using std::vector;
 using std::istream_iterator;
@@ -32,14 +31,8 @@ bool printValue(const char * command, opcode value, opcode opCode)
     return false;
 }
 
-int main()
-{
-    Con game;
-    game.ConstructConsole(64*2, 32*2, 7, 7);
-    game.Start();
-}
 
-int notmain()
+int main()
 {
     //Test b;
     //b.ConstructConsole(64, 32, 20, 20);
@@ -48,11 +41,9 @@ int notmain()
     //b.Start();
     
     // make window
-    opcode opCode = 0x0F00;
-    printf("0X%04x secend byte is: 0X%01x", opCode, CPU::getSecend(opCode));
     //Choose any color
     
-    CPU a("pong.rom");
+    CPU a("delay test.ch8", 30);
 
     while (true)
     {

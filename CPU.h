@@ -8,15 +8,20 @@
 #include <time.h> 
 #include <Windows.h>
 
-#include "Test.h"
+
+
 
 #define RAM_SIZE 4096
 #define READ_SIZE 512
 
+#define SCREEN_WIDTH 64
+#define SCREEN_HEIGHT 32
+
 // todo: 
+// make read good
 // test code
 // have fun!
-// refactor
+// refactor: make screen in cpu
 // git init
 // add debug tools
 
@@ -35,10 +40,12 @@ typedef unsigned char  kk;
 
 int const NUMBERS_SPRITES[] = { 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20, 0x40, 0x40, 0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0, 0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80 };
 
+class Screen;
+
 class CPU
 {
 public:
-	CPU(string ROMfilePath);
+	CPU(string ROMfilePath, int fpsLimit);
 	~CPU();
 	void fetch();
 
@@ -50,13 +57,21 @@ public:
 
 	typedef void (CPU::*arithmeticFunc)(x, x);
 
+	int fpsLimit;
+	unsigned char Vx[16] = { 0 };
+	unsigned char delayRegister;
+	unsigned char soundRegister;
+	unsigned char SPRegister;
+	unsigned short IRegister;
+	unsigned short PCRegister;
 private:
-	Screen screen = Screen(1, 1, 10, 10);
+	Screen* screen;
 
 	void decode(opcode opCode);
 	static bool printValue(const char* command, opcode value, opcode opCode);
+	void down_counters();
 
-	void clearDisplay();  // 00E0 todo
+	void clearDisplay();  // 00E0
 	void ret();  // 00EE
 	void setPC(nnn addr);  // 1nnn 
 	void call(nnn addr);  // 2nnn 
@@ -97,12 +112,7 @@ private:
 
 
 
-	unsigned char Vx[16] = { 0 };
-	unsigned char delayRegister;
-	unsigned char soundRegister;
-	unsigned char SPRegister;
-	unsigned short IRegister;
-	unsigned short PCRegister;
+	
 	unsigned short stack[16] = { 0 };
 
 	static const char chars[];

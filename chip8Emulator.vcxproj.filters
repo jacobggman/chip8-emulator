@@ -21,9 +21,6 @@
     <ClCompile Include="CPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="testConsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Test.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="testConsole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

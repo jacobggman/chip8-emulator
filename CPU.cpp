@@ -1,10 +1,14 @@
+#include "Test.h"
 #include "CPU.h"
+
+// Define our static variables
+
 
 const char CPU::chars[16] = { '1', '2', '3', '4', 'Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V' };
 
-CPU::CPU(string ROMfilePath)
+CPU::CPU(string ROMfilePath, int fpsLimit)
 {
-    // todo make the screen size
+    this->fpsLimit = fpsLimit;
     srand(time(0));
 
     this->instructions = new unsigned short[READ_SIZE];
@@ -18,6 +22,12 @@ CPU::CPU(string ROMfilePath)
     {
         this->ram[i] = NUMBERS_SPRITES[i];
     }
+
+    this->screen = new Screen(this);
+
+    //64x32
+    this->screen->ConstructConsole(SCREEN_WIDTH, SCREEN_HEIGHT, 8, 8);
+    this->screen->Start();
 }
 
 CPU::~CPU()
@@ -28,14 +38,12 @@ CPU::~CPU()
 void CPU::fetch()
 {
     decode(this->instructions[this->PCRegister]);
+
     this->PCRegister += 1;
 }
 
 void CPU::decode(opcode opCode)
 {
-    
-
-
     switch ((opCode) / 0x1000)
     {
     case 0x0:
@@ -165,8 +173,27 @@ bool CPU::printValue(const char* command, opcode value, opcode opCode)
     return false;
 }
 
+void CPU::down_counters()
+{
+    // todo : make this thread
+
+    int down = 60 / this->fpsLimit;
+    if (this->delayRegister)
+    {
+        this->delayRegister -= down;
+    }
+    if (this->soundRegister)
+    {
+        this->soundRegister -= down;
+        // todo sound
+        //this->makeSound();
+    }
+}
+
 void CPU::clearDisplay()
 {
+    this->screen->Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 9608, BG_BLACK);
+    this->screen->updateScreen();
 }
 
 void CPU::ret()
@@ -321,8 +348,9 @@ void CPU::display(x vx, x yx, x f)
         auto x = this->Vx[vx];
         auto y = this->Vx[yx];
 
-        this->Vx[0xF] = this->screen.draw(x, y, sprit);
+        this->Vx[0xF] = this->screen->draw(x, y, sprit);
     }
+    this->screen->updateScreen();
 }
 
 void CPU::isPressed(x vx)

@@ -155,14 +155,12 @@
   <ItemGroup>
     <ClCompile Include="chip8Emulator.cpp" />
     <ClCompile Include="CPU.cpp" />
-    <ClCompile Include="Test.cpp" />
     <ClCompile Include="testConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPU.h" />
     <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="Test.h" />
-    <ClInclude Include="testConsole.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
