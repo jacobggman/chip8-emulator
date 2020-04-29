@@ -58,6 +58,7 @@ public:
 	typedef void (CPU::*arithmeticFunc)(x, x);
 
 	int fpsLimit;
+	unsigned char ram[RAM_SIZE] = { 0 };
 	unsigned char Vx[16] = { 0 };
 	unsigned char delayRegister;
 	unsigned char soundRegister;
@@ -78,7 +79,7 @@ private:
 	void VxEqual(x vx, kk value);  // 3xkk 
 	void VxNotEqual(x vx, kk value);  // 4xkk 
 	void compereVxs(x vx, x vy);  // 5xy0 
-	void setVx(x vx, kk value);  // 6xkk 
+	void setVx(x vx, kk value);  // 6xkk tested
 	void addVx(x vx, kk value);  // 7xkk 
 	void SetVxYx(x vx, x vy);  // 8xy0  
 	void orVxYx(x vx, x vy);  // 8xy1  
@@ -116,8 +117,6 @@ private:
 	unsigned short stack[16] = { 0 };
 
 	static const char chars[];
-
-	unsigned char ram[RAM_SIZE] = { 0 };
-	unsigned short* instructions;
+	int pi = 0;
 };
 

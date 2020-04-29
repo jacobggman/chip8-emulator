@@ -1,45 +1,78 @@
 #include "Test.h"
 #include "CPU.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <limits>
+
 
 // Define our static variables
 
 
 const char CPU::chars[16] = { '1', '2', '3', '4', 'Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V' };
 
+#pragma warning(disable : 4996) // cant find c++ way to read null chars
 CPU::CPU(string ROMfilePath, int fpsLimit)
 {
     this->fpsLimit = fpsLimit;
     srand(time(0));
 
-    this->instructions = new unsigned short[READ_SIZE];
-    std::ifstream rfile(ROMfilePath, std::ios::binary);
-    rfile.read((char*)this->instructions, 500 * sizeof(this->instructions[0]));
-    rfile.close();
+    FILE* rom = fopen(ROMfilePath.c_str(), "rb");
+
+    // Get file size
+    fseek(rom, 0, SEEK_END);
+    long rom_size = ftell(rom);
+    rewind(rom);
+
+    // Allocate memory to store rom
+    char* rom_buffer = (char*)malloc(sizeof(char) * rom_size);
+
+    // Copy ROM into buffer
+    size_t result = fread(rom_buffer, sizeof(char), (size_t)rom_size, rom);
+
+    // Copy buffer to memory
+    for (int i = 0; i < rom_size; ++i) {
+        this->ram[i + 512] = (unsigned char)rom_buffer[i];   // Load into memory starting
+                                                    // at 0x200 (=512)
+    }
+
+    // Clean up
+    fclose(rom);
+    free(rom_buffer);
 
     int sizeNumbers = sizeof(NUMBERS_SPRITES) / sizeof(NUMBERS_SPRITES[0]);
-
     for (int i = 0; i < sizeNumbers; i++)
     {
         this->ram[i] = NUMBERS_SPRITES[i];
     }
 
-    this->screen = new Screen(this);
-
+    // program start at 0x200
+    this->PCRegister = 0x200;
     //64x32
+
+    this->screen = new Screen(this, false);
+
     this->screen->ConstructConsole(SCREEN_WIDTH, SCREEN_HEIGHT, 8, 8);
-    this->screen->Start();
+    
+    this->screen->startScreen();
 }
 
 CPU::~CPU()
 {
-    delete[] this->instructions;
+    delete this->screen;
 }
 
 void CPU::fetch()
 {
-    decode(this->instructions[this->PCRegister]);
+    unsigned char firstPart = this->ram[this->PCRegister];
+    unsigned char secendPart = this->ram[this->PCRegister + 1];
 
-    this->PCRegister += 1;
+    unsigned short instruction = firstPart << 8 | secendPart;
+    pi++;
+
+    decode(instruction);
+
+    this->PCRegister += 2;
 }
 
 void CPU::decode(opcode opCode)
@@ -158,7 +191,7 @@ x CPU::getSecend(opcode opCode)
 
 x CPU::getThird(opcode opCode)
 {
-    return (opCode / 10) % 0x10;
+    return (opCode / 0x10) % 0x10;
 }
 
 bool CPU::printValue(const char* command, opcode value, opcode opCode)
@@ -209,16 +242,16 @@ void CPU::setPC(nnn addr)
 
 void CPU::call(nnn addr)
 {
-    this->SPRegister++;
     this->stack[this->SPRegister] = this->PCRegister;
-    setPC(addr);
+    this->SPRegister++;
+    setPC(addr - 2);  // less 2 becuse it adding two after every command 
 }
 
 void CPU::VxEqual(x vx, kk value)
 {
     if (this->Vx[vx] == value)
     {
-        this->PCRegister += 1;
+        this->PCRegister += 2;
     }
 }
 
@@ -226,7 +259,7 @@ void CPU::VxNotEqual(x vx, kk value)
 {
     if (this->Vx[vx] != value)
     {
-        this->PCRegister += 1;
+        this->PCRegister += 2;
     }
 }
 
@@ -234,7 +267,7 @@ void CPU::compereVxs(x vx, x vy)
 {
     if (this->Vx[vx] == this->Vx[vy])
     {
-        this->PCRegister += 1;
+        this->PCRegister += 2;
     }
 }
 
@@ -321,7 +354,7 @@ void CPU::VxNotEqualYx(x vx, x vy)
 {
     if (this->Vx[vx] != this->Vx[vy])
     {
-        this->PCRegister += 1;
+        this->PCRegister += 2;
     }
 }
 
@@ -348,7 +381,8 @@ void CPU::display(x vx, x yx, x f)
         auto x = this->Vx[vx];
         auto y = this->Vx[yx];
 
-        this->Vx[0xF] = this->screen->draw(x, y, sprit);
+        if (this->screen->draw(x, y, sprit))
+            this->Vx[0xF] = 1;
     }
     this->screen->updateScreen();
 }
@@ -358,7 +392,7 @@ void CPU::isPressed(x vx)
     static const char chars[] = {'1', '2', '3', '4', 'Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'};
     if (GetKeyState(chars[vx]) & 0x8000)
     {
-        this->PCRegister += 1;
+        this->PCRegister += 2;
     }
 
 }
@@ -368,7 +402,7 @@ void CPU::isNotPressed(x vx)
     
     if (!(GetKeyState(chars[vx]) & 0x8000))
     {
-        this->PCRegister += 1;
+        this->PCRegister += 2;
     }
 }
 
@@ -411,17 +445,14 @@ void CPU::addIVx(x vx)
 
 void CPU::setIPointerOfVxNumber(x vx)
 {
-    this->IRegister = this->Vx[vx] * 5;
+    this->IRegister = this->Vx[vx] * 0x5;
 }
 
 void CPU::storeBCDVx(x vx)
 {
-    unsigned char Digit = this->Vx[vx];
-    for (int i = 3; i > 0; --i)
-    {
-        this->ram[this->IRegister + i - 1] = Digit % 10;
-        Digit /= 10;
-    }
+    this->ram[this->IRegister + 0] = this->Vx[(vx)] / 100;
+    this->ram[this->IRegister + 1] = (this->Vx[(vx)] / 10) % 10;
+    this->ram[this->IRegister + 2] = this->Vx[(vx)] % 10;
 }
 
 void CPU::saveRegisters(x vx)

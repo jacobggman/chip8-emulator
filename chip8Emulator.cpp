@@ -43,7 +43,11 @@ int main()
     // make window
     //Choose any color
     
-    CPU a("delay test.ch8", 30);
+    unsigned short value = 0x6b0c;
+    auto b = CPU::getLastTwo(value);
+    printf("%04x\n", b);
+    //return 0;
+    CPU a("test_opcode.ch8", 30);
 
     while (true)
     {

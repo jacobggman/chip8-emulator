@@ -325,8 +325,11 @@ public:
 		m_nScreenWidth = 80;
 		m_nScreenHeight = 30;
 
-		m_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		m_hConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
+		
+
+		m_hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+		m_hConsoleIn = m_hConsole;
+		//SetConsoleActiveScreenBuffer(m_hConsole);
 
 		std::memset(m_keyNewState, 0, 256 * sizeof(short));
 		std::memset(m_keyOldState, 0, 256 * sizeof(short));
@@ -417,8 +420,8 @@ public:
 			return Error(L"SetConsoleWindowInfo");
 
 		// Set flags to allow mouse input		
-		if (!SetConsoleMode(m_hConsoleIn, ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT))
-			return Error(L"SetConsoleMode");
+		//if (!SetConsoleMode(m_hConsoleIn, ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT))
+			//return Error(L"SetConsoleMode");
 
 		// Allocate memory for screen buffer
 		m_bufScreen = new CHAR_INFO[m_nScreenWidth * m_nScreenHeight];
