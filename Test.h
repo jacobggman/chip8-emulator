@@ -139,14 +139,21 @@ public:
 
 		for (int i = 0; i < 8; i++)
 		{
-			// loop bits
-			if ((value >> i) & 1)
+			if ((value & (0x80 >> i)) != 0)
 			{
-				bool doDraw = this->isDraw(x + i, y);
-				if (!doDraw)
+				// check if destory
+				if (isDraw(x + i, y))
+				{
 					ifErased = true;
-				this->setValue(x + i, y, doDraw ^ true);
+					setValue(x + i, y, 0);
+				}
+				else
+				{
+					setValue(x + i, y, 1);
+				}
+				// draw
 			}
+			// loop bits
 		}
 		return ifErased;
 	}
@@ -155,11 +162,12 @@ public:
 
 		if (doDraw)
 		{
-
+			// drawing
 			this->Draw(x, y);
 		}
 		else
 		{
+			// deleting
 			this->Draw(x, y, 9608, FG_BLACK);
 		}
 	}

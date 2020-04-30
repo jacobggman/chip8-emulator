@@ -31,11 +31,14 @@ CPU::CPU(string ROMfilePath, int fpsLimit)
     size_t result = fread(rom_buffer, sizeof(char), (size_t)rom_size, rom);
 
     // Copy buffer to memory
-    for (int i = 0; i < rom_size; ++i) {
-        this->ram[i + 512] = (unsigned char)rom_buffer[i];   // Load into memory starting
+    for (int i = 0; i < rom_size; ++i) 
+    {
+        auto a = (unsigned char)rom_buffer[i];
+;       this->ram[i + 512] = a;   // Load into memory starting
+        printf("%d ", a);
                                                     // at 0x200 (=512)
     }
-
+    // check why ram is not the working
     // Clean up
     fclose(rom);
     free(rom_buffer);
@@ -71,6 +74,7 @@ void CPU::fetch()
     pi++;
 
     decode(instruction);
+    down_counters();
 
     this->PCRegister += 2;
 }
@@ -231,8 +235,8 @@ void CPU::clearDisplay()
 
 void CPU::ret()
 {
-    this->PCRegister = this->stack[this->SPRegister];
     this->SPRegister--;
+    this->PCRegister = this->stack[this->SPRegister];
 }
 
 void CPU::setPC(nnn addr)
@@ -244,7 +248,7 @@ void CPU::call(nnn addr)
 {
     this->stack[this->SPRegister] = this->PCRegister;
     this->SPRegister++;
-    setPC(addr - 2);  // less 2 becuse it adding two after every command 
+    setPC(addr - 2);  // less 2 because 'fetch' adding two after every command 
 }
 
 void CPU::VxEqual(x vx, kk value)
@@ -303,37 +307,7 @@ void CPU::xorVxYx(x vx, x vy)
 
 void CPU::addVxYx(x vx, x vy)
 {
-    if (this->Vx[vx] + this->Vx[vy] > 255)
-    {
-        this->Vx[0xF] = 1;
-    }
-    else
-    {
-        this->Vx[0xF] = 0;
-    }
     this->Vx[vx] += this->Vx[vy];
-}
-
-void CPU::subVxYx(x vx, x vy)
-{
-    if (this->Vx[vx] > this->Vx[vy])
-    {
-        this->Vx[0xF] = 1;
-    }
-    else
-    {
-        this->Vx[0xF] = 0;
-    }
-    this->Vx[vx] -= this->Vx[vy];
-}
-
-void CPU::shrVxYx(x vx, x vy)
-{
-    this->Vx[vx] >>= this->Vx[vy];
-}
-
-void CPU::subnVxYx(x vx, x vy)
-{
     if (this->Vx[vy] > this->Vx[vx])
     {
         this->Vx[0xF] = 1;
@@ -342,12 +316,44 @@ void CPU::subnVxYx(x vx, x vy)
     {
         this->Vx[0xF] = 0;
     }
+}
+
+void CPU::subVxYx(x vx, x vy)
+{
+    if (this->Vx[vy] > this->Vx[vx])
+    {
+        this->Vx[0xF] = 0;
+    }
+    else
+    {
+        this->Vx[0xF] = 1;
+    }
+    this->Vx[vx] -= this->Vx[vy];
+}
+
+void CPU::shrVxYx(x vx, x vy)
+{
+    Vx[0xF] = Vx[vx] & 0x1;
+    Vx[vx] >>= 1;
+}
+
+void CPU::subnVxYx(x vx, x vy)
+{
+    if (this->Vx[vx] > this->Vx[vy])
+    {
+        this->Vx[0xF] = 0;
+    }
+    else
+    {
+        this->Vx[0xF] = 1;
+    }
     this->Vx[vx] = this->Vx[vy] - this->Vx[vx];
 }
 
 void CPU::shlVxYx(x vx, x vy)
 {
-    this->Vx[vx] <<= this->Vx[vy];
+    Vx[0xF] = Vx[vx] >> 7;
+    Vx[vx] <<= 1;
 }
 
 void CPU::VxNotEqualYx(x vx, x vy)
@@ -370,18 +376,39 @@ void CPU::jumpAddV0(nnn addr)
 
 void CPU::random(x vx, kk andValue)
 {
-    this->Vx[vx] = (rand() % 255) & andValue;
+    this->Vx[vx] = (rand() % 256) & andValue;
 }
 
 void CPU::display(x vx, x yx, x f)
 {
+    this->Vx[0xF] = 0;
     for (int i = 0; i < f; i++)
     {
         auto sprit = this->ram[this->IRegister + i];
         auto x = this->Vx[vx];
         auto y = this->Vx[yx];
 
-        if (this->screen->draw(x, y, sprit))
+        /*
+        for (int j = 0; j < 8; j++)
+        {
+            if ((sprit & (0x80 >> i)) != 0)
+            {
+                // check if destory
+                if (this->screen->isDraw(x, y))
+                {
+                    this->Vx[0xF] = 1;
+                    this->screen->setValue(x + j, y, 0);
+                }
+                else
+                {
+                    this->screen->setValue(x + j, y, 1);
+                }
+                // draw
+            }
+            // loop bits
+        }
+        */
+        if (this->screen->draw(x, y + i, sprit))
             this->Vx[0xF] = 1;
     }
     this->screen->updateScreen();
@@ -404,6 +431,10 @@ void CPU::isNotPressed(x vx)
     {
         this->PCRegister += 2;
     }
+    else
+    {
+        this->PCRegister = this->PCRegister;
+    }
 }
 
 void CPU::setVxDelay(x vx)
@@ -423,7 +454,7 @@ void CPU::waitForKey(x vx)
                 return;
             }
         }
-        Sleep(0.01);
+        Sleep(1 / this->fpsLimit);
     }
     
 }
@@ -440,6 +471,10 @@ void CPU::setSoundVx(x vx)
 
 void CPU::addIVx(x vx)
 {
+    if (this->IRegister + this->Vx[vx] > 0xFFF)
+        this->Vx[0xF] = 1;
+    else
+        this->Vx[0xF] = 0;
     this->IRegister += this->Vx[vx];
 }
 
@@ -461,6 +496,7 @@ void CPU::saveRegisters(x vx)
     {
         this->ram[this->IRegister + i] = this->Vx[i];
     }
+    this->IRegister += this->Vx[vx] + 1;
 }
 
 void CPU::loadRegisters(x vx)
@@ -469,4 +505,5 @@ void CPU::loadRegisters(x vx)
     {
         this->Vx[i] = this->ram[this->IRegister + i];
     }
+    this->IRegister += this->Vx[vx] + 1;
 }

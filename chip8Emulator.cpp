@@ -43,11 +43,11 @@ int main()
     // make window
     //Choose any color
     
-    unsigned short value = 0x6b0c;
-    auto b = CPU::getLastTwo(value);
-    printf("%04x\n", b);
+    //unsigned short value = 0xDAB6;
+    //auto b = CPU::getThird(value);
+    //printf("%04x\n", b);
     //return 0;
-    CPU a("test_opcode.ch8", 30);
+    CPU a("rand test.ch8", 60);
 
     while (true)
     {

@@ -79,7 +79,7 @@ private:
 	void VxEqual(x vx, kk value);  // 3xkk 
 	void VxNotEqual(x vx, kk value);  // 4xkk 
 	void compereVxs(x vx, x vy);  // 5xy0 
-	void setVx(x vx, kk value);  // 6xkk tested
+	void setVx(x vx, kk value);  // 6xkk
 	void addVx(x vx, kk value);  // 7xkk 
 	void SetVxYx(x vx, x vy);  // 8xy0  
 	void orVxYx(x vx, x vy);  // 8xy1  

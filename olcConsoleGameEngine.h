@@ -327,8 +327,8 @@ public:
 
 		
 
-		m_hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-		m_hConsoleIn = m_hConsole;
+		m_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		m_hConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
 		//SetConsoleActiveScreenBuffer(m_hConsole);
 
 		std::memset(m_keyNewState, 0, 256 * sizeof(short));
