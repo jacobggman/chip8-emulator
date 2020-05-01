@@ -2,6 +2,8 @@
 
 Chip8 emulator that uses the Windows console as a screen.
 
+![alt text](https://github.com/jacobggman/chip8-emulator/blob/master/example1.png?raw=true)
+
 ### Requires
 
 olcConsoleGameEngine
