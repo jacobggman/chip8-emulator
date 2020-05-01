@@ -75,7 +75,7 @@ void CPU::fetch()
     unsigned char secendPart = this->ram[this->PCRegister + 1];
 
     unsigned short instruction = firstPart << 8 | secendPart;
-    if (instruction == 0x3207)
+    if (instruction == 0x1248)
     {
         printf("");  // why stuck are change?!
     }
@@ -250,13 +250,14 @@ void CPU::ret()
 void CPU::setPC(nnn addr)
 {
     this->PCRegister = addr;
+    this->PCRegister -= 2;   // less 2 because 'fetch' adding two after every command
 }
 
 void CPU::call(nnn addr)
 {
     this->stack[this->SPRegister] = this->PCRegister;
     this->SPRegister++;
-    setPC(addr - 2);  // less 2 because 'fetch' adding two after every command 
+    setPC(addr); 
 }
 
 void CPU::VxEqual(x vx, kk value)
@@ -316,7 +317,7 @@ void CPU::xorVxYx(x vx, x vy)
 void CPU::addVxYx(x vx, x vy)
 {
     this->Vx[vx] += this->Vx[vy];
-    if (this->Vx[vy] > this->Vx[vx])
+    if (this->Vx[vy] > (0xFF - this->Vx[vx]))
     {
         this->Vx[0xF] = 1;
     }
@@ -425,7 +426,7 @@ void CPU::display(x vx, x yx, x f)
 void CPU::isPressed(x vx)
 {
     static const char chars[] = {'1', '2', '3', '4', 'Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'};
-    if (GetKeyState(chars[vx]) & 0x8000)
+    if (GetKeyState(chars[this->Vx[vx]]) & 0x8000)
     {
         this->PCRegister += 2;
     }
@@ -434,14 +435,9 @@ void CPU::isPressed(x vx)
 
 void CPU::isNotPressed(x vx)
 {
-    
-    if (!(GetKeyState(chars[vx]) & 0x8000))
+    if (!(GetKeyState(chars[this->Vx[vx]]) & 0x8000))
     {
         this->PCRegister += 2;
-    }
-    else
-    {
-        this->PCRegister = this->PCRegister;
     }
 }
 
@@ -452,18 +448,15 @@ void CPU::setVxDelay(x vx)
 
 void CPU::waitForKey(x vx)
 {
-    while (true)
+    for (int i = 0; i < 16; i++)
     {
-        for (int i = 0; i < 16; i++)
+        if ((GetKeyState(chars[i]) & 0x8000))
         {
-            if ((GetKeyState(chars[i]) & 0x8000))
-            {
-                this->Vx[vx] = i;
-                return;
-            }
+            this->Vx[vx] = i;
+            return;
         }
-        Sleep(1 / this->fpsLimit);
     }
+    this->PCRegister -= 2;  // stay on this instaction until press key
     
 }
 
@@ -507,7 +500,7 @@ void CPU::storeBCDVx(x vx)
 
 void CPU::saveRegisters(x vx)
 {
-    for (int i = 0; i < vx; i++)
+    for (int i = 0; i <= vx; i++)
     {
         this->ram[this->IRegister + i] = this->Vx[i];
     }
@@ -516,7 +509,8 @@ void CPU::saveRegisters(x vx)
 
 void CPU::loadRegisters(x vx)
 {
-    for (int i = 0; i < vx; i++)
+    // 0x03e9
+    for (int i = 0; i <= vx; i++)
     {
         this->Vx[i] = this->ram[this->IRegister + i];
     }

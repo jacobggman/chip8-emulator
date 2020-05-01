@@ -95,15 +95,15 @@ private:
 	void jumpAddV0(nnn addr);  // Bnnn 
 	void random(x vx, kk andValue);  // Cxkk 
 	void display(x vx, x yx, x f);  // Dxyn
-	void isPressed(x vx);  // Ex9E  // connect
-	void isNotPressed(x vx);  // ExA1  // connect
+	void isPressed(x vx);  // Ex9E 
+	void isNotPressed(x vx);  // ExA1 
 	void setVxDelay(x vx);  // Fx07
-	void waitForKey(x vx);  // Fx0A  // connect
+	void waitForKey(x vx);  // Fx0A 
 	void setDelayVx(x vx);  // Fx15 
 	void setSoundVx(x vx);  // Fx18 
 	void addIVx(x vx);  // Fx1E 
 	void setIPointerOfVxNumber(x vx);  // Fx29
-	void storeBCDVx(x vx);  // Fx33 // ?
+	void storeBCDVx(x vx);  // Fx33
 	void saveRegisters(x vx);  // Fx55
 	void loadRegisters(x vx);  // Fx65
 
