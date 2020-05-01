@@ -141,6 +141,10 @@ public:
 		{
 			if ((value & (0x80 >> i)) != 0)
 			{
+				if (x > this->m_nScreenWidth || y > this->m_nScreenHeight)
+				{
+					throw  "WTF";
+				}
 				// check if destory
 				if (isDraw(x + i, y))
 				{

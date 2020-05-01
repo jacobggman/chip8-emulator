@@ -55,9 +55,13 @@ CPU::CPU(string ROMfilePath, int fpsLimit)
 
     this->screen = new Screen(this, false);
 
-    this->screen->ConstructConsole(SCREEN_WIDTH, SCREEN_HEIGHT, 8, 8);
+    if (!this->screen->ConstructConsole(SCREEN_WIDTH, SCREEN_HEIGHT, 8, 8))
+    {
+        throw "can't start screen";
+    }
     
-    this->screen->startScreen();
+    Sleep(1000);
+    this->screen->Start();
 }
 
 CPU::~CPU()
@@ -71,6 +75,10 @@ void CPU::fetch()
     unsigned char secendPart = this->ram[this->PCRegister + 1];
 
     unsigned short instruction = firstPart << 8 | secendPart;
+    if (instruction == 0x3207)
+    {
+        printf("");  // why stuck are change?!
+    }
     pi++;
 
     decode(instruction);
@@ -485,9 +493,16 @@ void CPU::setIPointerOfVxNumber(x vx)
 
 void CPU::storeBCDVx(x vx)
 {
-    this->ram[this->IRegister + 0] = this->Vx[(vx)] / 100;
-    this->ram[this->IRegister + 1] = (this->Vx[(vx)] / 10) % 10;
-    this->ram[this->IRegister + 2] = this->Vx[(vx)] % 10;
+    auto a = this->Vx[vx] / 100;
+    auto b = (this->Vx[vx] / 10) % 10;
+    auto c = this->Vx[vx] % 10;
+    this->ram[this->IRegister + 0] = a;
+    this->ram[this->IRegister + 1] = b;
+    this->ram[this->IRegister + 2] = c;
+
+    //this->ram[this->IRegister + 0] = this->Vx[vx] / 100;
+    //this->ram[this->IRegister + 1] = (this->Vx[vx] / 10) % 10;
+    //this->ram[this->IRegister + 2] = this->Vx[vx] % 10;
 }
 
 void CPU::saveRegisters(x vx)
@@ -496,7 +511,7 @@ void CPU::saveRegisters(x vx)
     {
         this->ram[this->IRegister + i] = this->Vx[i];
     }
-    this->IRegister += this->Vx[vx] + 1;
+    this->IRegister += vx + 1;
 }
 
 void CPU::loadRegisters(x vx)
@@ -505,5 +520,5 @@ void CPU::loadRegisters(x vx)
     {
         this->Vx[i] = this->ram[this->IRegister + i];
     }
-    this->IRegister += this->Vx[vx] + 1;
+    this->IRegister += vx + 1;
 }

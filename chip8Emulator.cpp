@@ -32,8 +32,10 @@ bool printValue(const char * command, opcode value, opcode opCode)
 }
 
 
+
 int main()
 {
+
     //Test b;
     //b.ConstructConsole(64, 32, 20, 20);
     //b.Draw(1, 2);
@@ -47,7 +49,7 @@ int main()
     //auto b = CPU::getThird(value);
     //printf("%04x\n", b);
     //return 0;
-    CPU a("rand test.ch8", 60);
+    CPU a("test_opcode.ch8", 60);
 
     while (true)
     {
