@@ -1,6 +1,7 @@
 // chip8Emulator.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#define FILE_PATH "pong.rom"
 // CHIP8
 // NES
 #include <iostream>
@@ -49,7 +50,7 @@ int main()
     //auto b = CPU::getThird(value);
     //printf("%04x\n", b);
     //return 0;
-    CPU a("test_opcode.ch8", 60);
+    CPU a(FILE_PATH, 60);
 
     while (true)
     {
