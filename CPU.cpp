@@ -25,7 +25,7 @@ CPU::CPU(string ROMfilePath, int fpsLimit)
     rewind(rom);
 
     // Allocate memory to store rom
-    char* rom_buffer = (char*)malloc(sizeof(char) * rom_size);
+    char* rom_buffer = new char[rom_size];
 
     // Copy ROM into buffer
     size_t result = fread(rom_buffer, sizeof(char), (size_t)rom_size, rom);
@@ -41,7 +41,7 @@ CPU::CPU(string ROMfilePath, int fpsLimit)
     // check why ram is not the working
     // Clean up
     fclose(rom);
-    free(rom_buffer);
+    delete rom_buffer;
 
     int sizeNumbers = sizeof(NUMBERS_SPRITES) / sizeof(NUMBERS_SPRITES[0]);
     for (int i = 0; i < sizeNumbers; i++)
@@ -82,7 +82,7 @@ void CPU::fetch()
     pi++;
 
     decode(instruction);
-    down_counters();
+    downCounters();
 
     this->PCRegister += 2;
 }
@@ -206,19 +206,7 @@ x CPU::getThird(opcode opCode)
     return (opCode / 0x10) % 0x10;
 }
 
-bool CPU::printValue(const char* command, opcode value, opcode opCode)
-{
-    if (opCode < (value + 0x1000))
-    {
-        printf("%04x = ", opCode);
-        printf(command);
-        printf(" - %03x\n", opCode - value);
-        return true;
-    }
-    return false;
-}
-
-void CPU::down_counters()
+void CPU::downCounters()
 {
     // todo : make this thread
 

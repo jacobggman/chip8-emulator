@@ -1,9 +1,3 @@
-// chip8Emulator.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-#define FILE_PATH "pong.rom"
-// CHIP8
-// NES
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -12,44 +6,20 @@
 #include <cmath>
 #include "CPU.h"
 
-using std::vector;
-using std::istream_iterator;
-using std::ifstream;
-using std::noskipws;
+#define FILE_PATH "pong.rom"
 
-
-typedef unsigned short int opcode;
-
-bool printValue(const char * command, opcode value, opcode opCode)
-{  
-    if (opCode < (value + 0x1000))
-    {
-        printf("%04x = ", opCode);
-        printf(command);
-        printf(" - %03x\n", opCode - value);
-        return true;
-    }
-    return false;
-}
-
-
+// todo:
+// file picker
+// refactor
+// add docs
+// rewire test.h to cpp file
+// sound
+// rewite olcConsoleGameEngine
+// debuger
 
 int main()
 {
 
-    //Test b;
-    //b.ConstructConsole(64, 32, 20, 20);
-    //b.Draw(1, 2);
-    //b.Draw(1, 3);
-    //b.Start();
-    
-    // make window
-    //Choose any color
-    
-    //unsigned short value = 0xDAB6;
-    //auto b = CPU::getThird(value);
-    //printf("%04x\n", b);
-    //return 0;
     CPU a(FILE_PATH, 60);
 
     while (true)

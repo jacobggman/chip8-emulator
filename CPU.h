@@ -18,11 +18,7 @@
 #define SCREEN_HEIGHT 32
 
 // todo: 
-// make read good
-// test code
-// have fun!
 // refactor: make screen in cpu
-// git init
 // add debug tools
 
 
@@ -45,12 +41,46 @@ class Screen;
 class CPU
 {
 public:
+	/*
+	Init the chip8
+	Input: Chip8 program path and max frames per secend
+	Output: None
+	*/
 	CPU(string ROMfilePath, int fpsLimit);
+	/*
+	destruct the chip8
+	Input: None
+	Output: None
+	*/
 	~CPU();
+
+	/*
+	Run clock of cpu
+	Input: None
+	Output: None
+	*/
 	void fetch();
 
+	/*
+	Return last two bytes of a value
+	Input: The value
+	Output: Last two bytes
+	Example: ABCD -> CD
+	*/
 	kk static getLastTwo(opcode opCode);
+	/*
+	Return secend byte of a value
+	Input: The value
+	Output: Secend byte
+	Example: ABCD -> B
+	*/
 	x static getSecend(opcode opCode);
+	/*
+	Return third byte of a value
+	Input: The value
+	Output: third byte
+	Example: ABCD -> C
+	*/
 	x static getThird(opcode opCode);
 
 
@@ -68,9 +98,27 @@ public:
 private:
 	Screen* screen;
 
+
+	
+	/*
+	Make instructions from opcode
+	Input: Opcode
+	Output: None
+	*/
 	void decode(opcode opCode);
-	static bool printValue(const char* command, opcode value, opcode opCode);
-	void down_counters();
+	
+	/*
+	Decrease counters
+	Input: None
+	Output: None
+	*/
+	void downCounters();
+
+	/*
+	chip8 instructions
+	Input: Operand/s or None
+	Output: None
+	*/
 
 	void clearDisplay();  // 00E0
 	void ret();  // 00EE

@@ -1,13 +1,7 @@
 #pragma once
 #include "olcConsoleGameEngine.h"
 #include "CPU.h"
-#include <sstream>      // std::stringstream
-
-// to do:
-// make screen draw
-// make sound
-// getInput
-// connect to cpu
+#include <sstream>     
 
 class Debuger : public olcConsoleGameEngine
 {
@@ -101,6 +95,7 @@ private:
 class Screen : public olcConsoleGameEngine
 {
 public:
+
 	Screen(CPU* cpu, bool debug)
 	{
 		this->cpu = cpu;
@@ -143,7 +138,7 @@ public:
 			{
 				if (x > this->m_nScreenWidth || y > this->m_nScreenHeight)
 				{
-					throw  "WTF";
+					throw  "out of range";
 				}
 				// check if destory
 				if (isDraw(x + i, y))
