@@ -11,20 +11,58 @@ class Screen
 {
 public:
 
+	/*
+	Init screen class
+	Input: Do open debugger (not implemented yet) and the program name 
+	Output: None
+	*/
 	Screen(bool debug, string programName);
 
-	int ConstructConsole(int fontw, int fonth);
+	/*
+	Construct the screen console
+	Input: The size of with and height of the front
+	Output: If succeeded
+	*/
+	int constructConsole(int fontw, int fonth);
 
-	void Fill(int x, int y, short c, short col);
+	/*
+	Fill screen
+	Input: which part to fill and char type and color
+	Output: None
+	*/
+	void fill(int x, int y, short c, short col);
 
-	static BOOL CloseHandler(DWORD evt);
-
-	bool draw(int x, int y, unsigned char value);
-	void Draw(int x, int y, short c, short col);
+	/*
+	Draw chip8 instaction
+	Input: Where to draw and the sprit
+	Output: If erased anything
+	*/
+	bool instactionDraw(int x, int y, unsigned char value);
+	/*
+	Draw one pixel
+	Input: Where to draw color and type of char
+	Output: None
+	*/
+	void draw(int x, int y, short c, short col);
+	/*
+	Draw or undraw a pixel
+	Input: Where to draw and if draw or undraw
+	Output: None
+	*/
 	void setValue(int x, int y, bool doDraw);
 
+	/*
+	Check if pixel is drew
+	Input: Where to check
+	Output: if drew
+	*/
 	bool isDraw(int x, int y);
 
+	/*
+	Update screen
+	Input: None
+	Output: None
+	*/
 	void updateScreen();
 
 	int emptyColor = 0x0000;

@@ -8,20 +8,14 @@ Screen::Screen(bool debug, string programName)
 
 }
 
-void Screen::Fill(int x, int y, short c = 0x2588, short col = 0x000F)
+void Screen::fill(int x, int y, short c = 0x2588, short col = 0x000F)
 {
 	for (int i = 0; i < x; i++)
 		for (int j = 0; j < y; j++)
-			Draw(i, j, c, col);
+			draw(i, j, c, col);
 }
-BOOL Screen::CloseHandler(DWORD evt)
-{
-	if (evt == CTRL_CLOSE_EVENT)
-	{
-	}
-	return true;
-}
-int Screen::ConstructConsole(int fontw, int fonth)
+
+int Screen::constructConsole(int fontw, int fonth)
 {
 	if (console == INVALID_HANDLE_VALUE)
 		return 0;
@@ -63,11 +57,11 @@ int Screen::ConstructConsole(int fontw, int fonth)
 	screenBuffer = new CHAR_INFO[screenWidth * screenHeight];
 	memset(screenBuffer, 0, sizeof(CHAR_INFO) * screenWidth * screenHeight);
 
-	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CloseHandler, TRUE);
+	SetConsoleCtrlHandler(NULL, TRUE);
 	return 1;
 }
 
-bool Screen::draw(int x, int y, unsigned char value)
+bool Screen::instactionDraw(int x, int y, unsigned char value)
 {
 	bool ifErased = false;
 
@@ -97,7 +91,7 @@ bool Screen::draw(int x, int y, unsigned char value)
 	return ifErased;
 }
 
-void Screen::Draw(int x, int y, short c = 0x2588, short col = 0x000F)
+void Screen::draw(int x, int y, short c = 0x2588, short col = 0x000F)
 {
 	if (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight)
 	{
@@ -111,12 +105,12 @@ void Screen::setValue(int x, int y, bool doDraw)
 	if (doDraw)
 	{
 		// drawing
-		this->Draw(x, y);
+		this->draw(x, y);
 	}
 	else
 	{
 		// deleting
-		this->Draw(x, y, 9608, emptyColor);
+		this->draw(x, y, 9608, emptyColor);
 	}
 }
 

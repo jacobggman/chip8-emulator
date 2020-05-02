@@ -52,7 +52,7 @@ CPU::CPU(string ROMfilePath, int fpsLimit) : screen(Screen(false, ROMfilePath))
     this->PCRegister = 0x200;
     //64x32
 
-    if (!this->screen.ConstructConsole(5, 5))
+    if (!this->screen.constructConsole(5, 5))
     {
         throw "can't start screen";
     }
@@ -214,7 +214,7 @@ void CPU::downCounters()
 
 void CPU::clearDisplay()
 {
-    this->screen.Fill(SCREEN_WIDTH, SCREEN_HEIGHT, 9608, this->screen.emptyColor);
+    this->screen.fill(SCREEN_WIDTH, SCREEN_HEIGHT, 9608, this->screen.emptyColor);
     //this->screen->updateScreen();
 }
 
@@ -394,7 +394,7 @@ void CPU::display(x vx, x yx, x f)
             // loop bits
         }
         */
-        if (this->screen.draw(x, y + i, sprit))
+        if (this->screen.instactionDraw(x, y + i, sprit))
             this->Vx[0xF] = 1;
     }
 }
