@@ -121,10 +121,8 @@ bool Screen::isDraw(int x, int y)
 
 void Screen::updateScreen()
 {
-	// Update Title & Present Screen Buffer
-	float fElapsedTime = 1;
 	wchar_t s[256];
-	swprintf_s(s, 256, L"OneLoneCoder.com - Console Game Engine - %s - FPS: %3.2f", appName.c_str(), 1.0f / fElapsedTime);
+	swprintf_s(s, 256, L"Chip8 Emulator - %s", appName.c_str());
 	SetConsoleTitle(s);
 	WriteConsoleOutput(console, screenBuffer, { (short)screenWidth, (short)screenHeight }, { 0,0 }, &rectWindow);
 }

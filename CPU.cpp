@@ -52,7 +52,7 @@ CPU::CPU(string ROMfilePath, int fpsLimit) : screen(Screen(false, ROMfilePath))
     this->PCRegister = 0x200;
     //64x32
 
-    if (!this->screen.constructConsole(5, 5))
+    if (!this->screen.constructConsole(8, 8))
     {
         throw "can't start screen";
     }
@@ -197,8 +197,6 @@ x CPU::getThird(opcode opCode)
 
 void CPU::downCounters()
 {
-    // todo : make this thread
-
     int down = 60 / this->fpsLimit;
     if (this->delayRegister)
     {
@@ -206,9 +204,8 @@ void CPU::downCounters()
     }
     if (this->soundRegister)
     {
+        Beep(HERTZ_BEEP, 1000 / fpsLimit);
         this->soundRegister -= down;
-        // todo sound
-        //this->makeSound();
     }
 }
 
