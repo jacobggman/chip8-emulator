@@ -197,15 +197,14 @@ x CPU::getThird(opcode opCode)
 
 void CPU::downCounters()
 {
-    int down = 60 / this->fpsLimit;
     if (this->delayRegister)
     {
-        this->delayRegister -= down;
+        this->delayRegister -= 1;
     }
     if (this->soundRegister)
     {
-        Beep(HERTZ_BEEP, 1000 / fpsLimit);
-        this->soundRegister -= down;
+        Beep(HERTZ_BEEP, TIME_BEEP);
+        this->soundRegister -= 1;
     }
 }
 

@@ -125,4 +125,5 @@ void Screen::updateScreen()
 	swprintf_s(s, 256, L"Chip8 Emulator - %s", appName.c_str());
 	SetConsoleTitle(s);
 	WriteConsoleOutput(console, screenBuffer, { (short)screenWidth, (short)screenHeight }, { 0,0 }, &rectWindow);
+	std::this_thread::sleep_for(std::chrono::microseconds(1200));
 }

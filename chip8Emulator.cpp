@@ -25,6 +25,5 @@ int main()
     while (true)
     {
         a.fetch();
-        Sleep(1000 / a.fpsLimit);
     }
 }
