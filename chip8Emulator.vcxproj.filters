@@ -24,6 +24,9 @@
     <ClCompile Include="testConsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPU.h">
@@ -32,7 +35,10 @@
     <ClInclude Include="olcConsoleGameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Test.h">
+    <ClInclude Include="defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

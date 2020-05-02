@@ -1,4 +1,3 @@
-#include "Test.h"
 #include "CPU.h"
 #include <fstream>
 #include <iostream>
@@ -12,7 +11,7 @@
 const char CPU::chars[16] = { '1', '2', '3', '4', 'Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V' };
 
 #pragma warning(disable : 4996) // cant find c++ way to read null chars
-CPU::CPU(string ROMfilePath, int fpsLimit)
+CPU::CPU(string ROMfilePath, int fpsLimit) : screen(Screen(false, ROMfilePath))
 {
     this->fpsLimit = fpsLimit;
     srand(time(0));
@@ -41,7 +40,7 @@ CPU::CPU(string ROMfilePath, int fpsLimit)
     // check why ram is not the working
     // Clean up
     fclose(rom);
-    delete rom_buffer;
+    delete[] rom_buffer;
 
     int sizeNumbers = sizeof(NUMBERS_SPRITES) / sizeof(NUMBERS_SPRITES[0]);
     for (int i = 0; i < sizeNumbers; i++)
@@ -53,20 +52,15 @@ CPU::CPU(string ROMfilePath, int fpsLimit)
     this->PCRegister = 0x200;
     //64x32
 
-    this->screen = new Screen(this, false);
-
-    if (!this->screen->ConstructConsole(SCREEN_WIDTH, SCREEN_HEIGHT, 8, 8))
+    if (!this->screen.ConstructConsole(5, 5))
     {
         throw "can't start screen";
     }
     
-    Sleep(1000);
-    this->screen->Start();
 }
 
 CPU::~CPU()
 {
-    delete this->screen;
 }
 
 void CPU::fetch()
@@ -75,11 +69,6 @@ void CPU::fetch()
     unsigned char secendPart = this->ram[this->PCRegister + 1];
 
     unsigned short instruction = firstPart << 8 | secendPart;
-    if (instruction == 0x1248)
-    {
-        printf("");  // why stuck are change?!
-    }
-    pi++;
 
     decode(instruction);
     downCounters();
@@ -225,8 +214,8 @@ void CPU::downCounters()
 
 void CPU::clearDisplay()
 {
-    this->screen->Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 9608, BG_BLACK);
-    this->screen->updateScreen();
+    this->screen.Fill(SCREEN_WIDTH, SCREEN_HEIGHT, 9608, this->screen.emptyColor);
+    //this->screen->updateScreen();
 }
 
 void CPU::ret()
@@ -405,10 +394,9 @@ void CPU::display(x vx, x yx, x f)
             // loop bits
         }
         */
-        if (this->screen->draw(x, y + i, sprit))
+        if (this->screen.draw(x, y + i, sprit))
             this->Vx[0xF] = 1;
     }
-    this->screen->updateScreen();
 }
 
 void CPU::isPressed(x vx)
