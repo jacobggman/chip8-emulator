@@ -1,13 +1,43 @@
 #pragma once
-//#include "CPU.h"
 #include <sstream>     
 #include <thread>
 #include <string>
 #include <Windows.h>
 #include "defs.h"
 
-
 using std::string;
+
+class Screen
+{
+public:
+
+	Screen(bool debug, string programName);
+
+	int ConstructConsole(int fontw, int fonth);
+
+	void Fill(int x, int y, short c, short col);
+
+	static BOOL CloseHandler(DWORD evt);
+
+	bool draw(int x, int y, unsigned char value);
+	void Draw(int x, int y, short c, short col);
+	void setValue(int x, int y, bool doDraw);
+
+	bool isDraw(int x, int y);
+
+	void updateScreen();
+
+	int emptyColor = 0x0000;
+
+private:
+
+	int screenWidth = SCREEN_WIDTH;
+	int screenHeight = SCREEN_HEIGHT;
+	CHAR_INFO* screenBuffer;
+	std::wstring appName;
+	HANDLE console;
+	SMALL_RECT rectWindow;
+};
 
 /*
 class Debuger : public olcConsoleGameEngine
@@ -19,7 +49,7 @@ public:
 	{
 		this->cpu = cpu;
 		this->ConstructConsole(SCREEN_WIDTH/5, SCREEN_HEIGHT, 16, 16);
-		
+
 		//Debuger::Start();
 		//std::thread t = std::thread(&Debuger::Start, this);
 	}
@@ -95,50 +125,6 @@ protected:
 
 private:
 	CPU* cpu;
-	
+
 };
 */
-
-class Screen
-{
-public:
-
-	Screen(bool debug, string programName);
-
-	int ConstructConsole(int fontw, int fonth);
-	~Screen();
-
-	void Fill(int x, int y, short c, short col);
-
-	static BOOL CloseHandler(DWORD evt);
-	void startScreen();
-
-	bool draw(int x, int y, unsigned char value);
-	void Draw(int x, int y, short c, short col);
-	void setValue(int x, int y, bool doDraw);
-
-	bool isDraw(int x, int y);
-
-	void updateScreen();
-
-	int emptyColor = 0x0000;
-
-	virtual bool OnUserCreate();
-
-
-	virtual bool OnUserUpdate(float fElapsedTime);
-	
-private:
-
-	SMALL_RECT rectWindow;
-	int m_nScreenWidth = SCREEN_WIDTH;
-	int m_nScreenHeight = SCREEN_HEIGHT;
-	CHAR_INFO* m_bufScreen;
-	std::wstring m_sAppName;
-	HANDLE m_hOriginalConsole;
-	CONSOLE_SCREEN_BUFFER_INFO m_OriginalConsoleInfo;
-	HANDLE m_hConsole;
-	HANDLE m_hConsoleIn;
-	SMALL_RECT m_rectWindow;
-};
-
