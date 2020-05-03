@@ -34,7 +34,6 @@ CPU::CPU(string ROMfilePath, int fpsLimit) : screen(Screen(false, ROMfilePath))
     {
         auto a = (unsigned char)rom_buffer[i];
 ;       this->ram[i + 512] = a;   // Load into memory starting
-        printf("%d ", a);
                                                     // at 0x200 (=512)
     }
     // check why ram is not the working
@@ -52,8 +51,9 @@ CPU::CPU(string ROMfilePath, int fpsLimit) : screen(Screen(false, ROMfilePath))
     this->PCRegister = 0x200;
     //64x32
 
-    if (!this->screen.constructConsole(8, 8))
+    if (this->screen.constructConsole(8, 8))
     {
+
         throw "can't start screen";
     }
     

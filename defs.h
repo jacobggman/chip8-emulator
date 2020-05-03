@@ -5,3 +5,4 @@
 
 #define HERTZ_BEEP 740
 #define TIME_BEEP 1000/20
+#define DRAW_SPEED 1200

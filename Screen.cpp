@@ -18,17 +18,18 @@ void Screen::fill(int x, int y, short c = 0x2588, short col = 0x000F)
 int Screen::constructConsole(int fontw, int fonth)
 {
 	if (console == INVALID_HANDLE_VALUE)
-		return 0;
+		return 1;
 
 	rectWindow = { 0, 0, 1, 1 };
-	SetConsoleWindowInfo(console, TRUE, &rectWindow);
+	if (!SetConsoleWindowInfo(console, TRUE, &rectWindow))
+		return -1;
 
 	COORD coord = { (short)screenWidth, (short)screenHeight };
 	if (!SetConsoleScreenBufferSize(console, coord))
-		return 0;
+		return 2;
 
 	if (!SetConsoleActiveScreenBuffer(console))
-		return 0;
+		return 3;
 
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
@@ -40,25 +41,25 @@ int Screen::constructConsole(int fontw, int fonth)
 
 	wcscpy_s(cfi.FaceName, L"Consolas");
 	if (!SetCurrentConsoleFontEx(console, false, &cfi))
-		return 0;
+		return 4;
 
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	if (!GetConsoleScreenBufferInfo(console, &csbi))
-		return 0;
+		return 5;
 	if (screenHeight > csbi.dwMaximumWindowSize.Y)
-		return 0;
+		return 6;
 	if (screenWidth > csbi.dwMaximumWindowSize.X)
-		return 0;
+		return 7;
 
 	rectWindow = { 0, 0, (short)screenWidth - 1, (short)screenHeight - 1 };
 	if (!SetConsoleWindowInfo(console, TRUE, &rectWindow))
-		return 0;
+		return 8;
 
 	screenBuffer = new CHAR_INFO[screenWidth * screenHeight];
 	memset(screenBuffer, 0, sizeof(CHAR_INFO) * screenWidth * screenHeight);
 
 	SetConsoleCtrlHandler(NULL, TRUE);
-	return 1;
+	return 0;
 }
 
 bool Screen::instactionDraw(int x, int y, unsigned char value)
@@ -71,7 +72,7 @@ bool Screen::instactionDraw(int x, int y, unsigned char value)
 		{
 			if (x > this->screenWidth || y > this->screenHeight)
 			{
-				throw  "out of range";
+				return ifErased;
 			}
 			// check if destory
 			if (isDraw(x + i, y))
@@ -125,5 +126,5 @@ void Screen::updateScreen()
 	swprintf_s(s, 256, L"Chip8 Emulator - %s", appName.c_str());
 	SetConsoleTitle(s);
 	WriteConsoleOutput(console, screenBuffer, { (short)screenWidth, (short)screenHeight }, { 0,0 }, &rectWindow);
-	std::this_thread::sleep_for(std::chrono::microseconds(1200));
+	std::this_thread::sleep_for(std::chrono::microseconds(DRAW_SPEED));
 }

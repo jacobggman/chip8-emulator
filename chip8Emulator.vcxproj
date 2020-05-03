@@ -156,12 +156,10 @@
     <ClCompile Include="chip8Emulator.cpp" />
     <ClCompile Include="CPU.cpp" />
     <ClCompile Include="Screen.cpp" />
-    <ClCompile Include="testConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPU.h" />
     <ClInclude Include="defs.h" />
-    <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="Screen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
